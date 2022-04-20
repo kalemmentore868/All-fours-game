@@ -1,0 +1,85 @@
+*{
+    box-sizing: border-box;
+    /* outline: 1px solid red; */
+}
+
+.game-container{
+    margin: 10px auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    row-gap: 10px;
+    justify-items: center ;
+    width: 80%
+}
+
+.player1{
+    grid-column-start: 2;
+}
+
+.player2{
+    grid-row-start: 2;
+}
+
+.deck{
+    grid-column-start: 2;
+    grid-row-start: 2;
+}
+
+.player3{
+    grid-column-start: 2;
+    grid-row-start: 3;
+}
+
+.player4{
+    grid-column-start: 3;
+    grid-row-start: 2;
+}
+
+.card{
+    height: 25vh;
+    width: 7vw;
+    border: 1px solid black;
+    border-radius: .5rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 3rem;
+    position: relative;
+}
+
+.card::before,
+.card::after{
+    position: absolute;
+    content: attr(data-value);
+    font-size: 1.4rem
+}
+
+.card::before{
+    top: 0.5rem;
+    left: .5rem;
+}
+
+.card::after{
+    bottom: 0.5rem;
+    right: .5rem;
+    transform: rotate(180deg);
+}
+
+.red{
+    color: red;
+}
+
+.black{
+    color: black
+}
+
+.deck{
+    align-self: center;
+    
+
+}
+
+.hand{
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr
+}
