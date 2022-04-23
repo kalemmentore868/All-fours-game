@@ -56,22 +56,37 @@ if (kickedCard && pack) {
     let player2sFirstCard = players[1].hand[0];
     let player3 = players[2];
     let player3sFirstCard = players[2].hand[0];
-    let lift = new Lift(player1sFirstCard, player1, player2, player1, [], "");
+    let lift = new Lift(player1sFirstCard, player1, player1, player1, [], "");
     game = new Game(lift, players[0], kickedCard.suit, teams, players[0].hand[0].suit, players[0].hand[0].suit);
-    console.log("Player1's cards he can play", game.allowedPlays(players[0]));
-    lift.suit = player1sFirstCard.suit;
-    console.log(`Suit = ${lift.suit}, trump = ${game.trump}`);
-    lift.cardsInLift.push(player1sFirstCard);
-    let player2Moves = game.allowedPlays(player2);
-    console.log("Player2's cards he can play", player2Moves);
-    console.log(`Suit = ${lift.suit}, trump = ${game.trump}`);
-    lift.cardsInLift.push(player2Moves[player2Moves.length - 1]);
-    let player3Moves = game.allowedPlays(player3);
-    console.log("Player3's cards he can play", player3Moves);
-    console.log(`Suit = ${lift.suit}, trump = ${game.trump}`);
-    lift.cardsInLift.push(player3Moves[player3Moves.length - 1]);
-    let player4Moves = game.allowedPlays(players[3]);
-    console.log("Player4's cards he can play", player4Moves);
-    lift.cardsInLift.push(player4Moves[player4Moves.length - 1]);
-    console.log(lift.cardsInLift);
+    const displayPlayableCards = (player) => {
+        const legalMoves = game.allowedPlays(player);
+        legalMoves.map(card => {
+            const cardElement = document.getElementById(`${card.cardId}`);
+            if (cardElement) {
+                cardElement.classList.add("playable");
+                cardElement.addEventListener("click", () => {
+                });
+            }
+        });
+        return legalMoves;
+    };
+    while (lift.cardsInLift.length >= 3) {
+        const legalMoves = displayPlayableCards(lift.currentPlayerTurn);
+    }
+    //  console.log("Player1's cards he can play", game.allowedPlays(players[0]))
+    // lift.suit = player1sFirstCard.suit
+    // console.log(`Suit = ${lift.suit}, trump = ${game.trump}`)
+    // lift.cardsInLift.push(player1sFirstCard)
+    // let player2Moves = game.allowedPlays(player2)
+    // console.log("Player2's cards he can play", player2Moves)
+    // console.log(`Suit = ${lift.suit}, trump = ${game.trump}`)
+    // lift.cardsInLift.push(player2Moves[player2Moves.length - 1])
+    // let player3Moves = game.allowedPlays(player3)
+    // console.log("Player3's cards he can play", player3Moves)
+    // console.log(`Suit = ${lift.suit}, trump = ${game.trump}`)
+    // lift.cardsInLift.push(player3Moves[player3Moves.length - 1])
+    // let player4Moves = game.allowedPlays(players[3])
+    // console.log("Player4's cards he can play", player4Moves)
+    // lift.cardsInLift.push(player4Moves[player4Moves.length -1])
+    // console.log(lift.cardsInLift)
 }

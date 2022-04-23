@@ -47,6 +47,11 @@
     position: relative;
 }
 
+.card.playable{
+    border: solid black 5px;
+    cursor: pointer;
+}
+
 .card::before,
 .card::after{
     position: absolute;
