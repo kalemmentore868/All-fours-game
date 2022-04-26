@@ -135,4 +135,14 @@ export default class Game {
         let currentSuit = this.lift.suit;
         return playerHand.filter(card => card.suit === currentSuit);
     }
+    whoOwnsThisCard(card) {
+        // for(let team of this.teams){
+        //     for (let player of team){
+        //         if(card.playedBy === player.)
+        //     }
+        // }
+        // this.teams.map(team => {
+        //     team.map()
+        // })
+    }
 }

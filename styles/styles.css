@@ -45,11 +45,27 @@
     align-items: center;
     font-size: 3rem;
     position: relative;
+    background-color: white;
 }
 
 .card.playable{
     border: solid black 5px;
     cursor: pointer;
+}
+
+#displayLift{
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    position: absolute;
+    z-index: 1000;
+    
+    
+}
+
+.card.on-deck{
+    width: 3.5vw;
+    height: 12.5vh;
+    margin-top: 40px;
 }
 
 .card::before,

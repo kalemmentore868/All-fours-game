@@ -35,9 +35,11 @@ export default class Deck {
     }
 }
 function freshDeck() {
-    return SUITS.flatMap((suit) => {
+    let id = 0;
+    return SUITS.flatMap((suit, i) => {
         return VALUES.map((value, index) => {
-            return new Card(suit, value, index, "");
+            id++;
+            return new Card(suit, value, id, "");
         });
     });
 }

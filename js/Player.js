@@ -7,4 +7,18 @@ export default class Player {
         this.isToDeal = isToDeal;
         this.chosenCard;
     }
+    findCard(id) {
+        const cardId = parseInt(id);
+        console.log(cardId);
+        let foundCard = this.hand.find(card => card.cardId === cardId);
+        if (foundCard) {
+            return foundCard;
+        }
+        else {
+            return null;
+        }
+    }
+    removeCard(id) {
+        return this.hand.filter(card => card.cardId !== id);
+    }
 }
