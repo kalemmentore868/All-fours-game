@@ -68,11 +68,11 @@ export default class Game {
         let highestCard = cards[0];
         let highestCardValue = 0;
         cards.map(card => {
-            if (this.getCardValue(card) === 14)
-                return card;
-            if (this.getCardValue(card) > highestCardValue) {
+            // if(this.getCardValue(card) === 14) return card
+            let cardValue = this.getCardValue(card);
+            if (cardValue > highestCardValue) {
                 highestCard = card;
-                highestCardValue = this.getCardValue(card);
+                highestCardValue = cardValue;
             }
         });
         return highestCard;
@@ -136,13 +136,31 @@ export default class Game {
         return playerHand.filter(card => card.suit === currentSuit);
     }
     whoOwnsThisCard(card) {
-        // for(let team of this.teams){
-        //     for (let player of team){
-        //         if(card.playedBy === player.)
-        //     }
-        // }
-        // this.teams.map(team => {
-        //     team.map()
-        // })
+        let owner = null;
+        for (let team of this.teams) {
+            for (let player of team.players) {
+                if (card.playedBy === player.name) {
+                    owner = player;
+                }
+            }
+        }
+        return owner;
+    }
+    getLiftWinner() {
+        if (this.lift.cardsInLift.length >= 4) {
+            if (this.containsTrump(this.lift.cardsInLift)) {
+                let trumpInLift = this.getTrumpCards(this.lift.cardsInLift);
+                let highestCard = this.getHighestCardOfSuit(trumpInLift);
+                return this.whoOwnsThisCard(highestCard);
+            }
+            else {
+                let cardsOfSuit = this.getCardsOfSuit(this.lift.cardsInLift);
+                let highestCard = this.getHighestCardOfSuit(cardsOfSuit);
+                return this.whoOwnsThisCard(highestCard);
+            }
+        }
+        else {
+            return null;
+        }
     }
 }

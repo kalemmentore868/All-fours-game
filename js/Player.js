@@ -19,6 +19,6 @@ export default class Player {
         }
     }
     removeCard(id) {
-        return this.hand.filter(card => card.cardId !== id);
+        this.hand = this.hand.filter(card => card.cardId !== id);
     }
 }

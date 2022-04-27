@@ -11,6 +11,7 @@ deck.shuffle();
 let playersChosenCardId = "";
 let game;
 let lift;
+let kickedCardElement;
 function displayPlayableCards(player) {
     const legalMoves = game.allowedPlays(player);
     legalMoves.map(card => {
@@ -32,31 +33,40 @@ for (let hand of hands) {
             playersChosenCardId = cardClicked.id;
         }
     }
+    function updateLift(foundCard) {
+        if (lift.turnNumber === 0) {
+            lift.suit = foundCard.suit;
+        }
+        lift.cardsInLift.push(foundCard);
+        lift.currentPlayerTurn.chosenCard = foundCard;
+        lift.currentPlayerTurn.removeCard(foundCard.cardId);
+        lift.turnNumber++;
+        lift.currentPlayerTurn = lift.getNewCurrentPlayer(players);
+    }
     hand.addEventListener("click", (e) => {
         let cardClicked = e.target;
         handleCardClickedStyles(cardClicked);
         const foundCard = lift.currentPlayerTurn.findCard(playersChosenCardId);
-        console.log("Found Card", foundCard);
         if (foundCard) {
-            if (lift.turnNumber === 0) {
-                lift.suit = foundCard.suit;
+            updateLift(foundCard);
+            if (lift.cardsInLift.length >= 4) {
+                console.log(lift.cardsInLift);
+                const liftWinner = game.getLiftWinner();
+                console.log(liftWinner);
+                if (liftWinner) {
+                    lift.currentPlayerTurn = liftWinner;
+                    lift.setRoundForLiftWinner(liftWinner, players);
+                }
+                lift.cardsInLift = [];
+                liftContainer.innerHTML = "";
+                lift.turnNumber = 0;
             }
-            lift.cardsInLift.push(foundCard);
-            lift.currentPlayerTurn.chosenCard = foundCard;
-            lift.currentPlayerTurn.removeCard(foundCard.cardId);
-            lift.turnNumber++;
-            lift.currentPlayerTurn = lift.getNewCurrentPlayer(players);
-            console.log(lift.currentPlayerTurn);
-            console.log(lift.suit);
             displayPlayableCards(lift.currentPlayerTurn);
         }
     });
 }
 let position;
 const players = [];
-const team1 = new Team([players[0], players[3]], 0, 0, [], "team1");
-const team2 = new Team([players[1], players[4]], 0, 0, [], "team2");
-const teams = [team1, team2];
 for (let i = 0; i < 4; i++) {
     position = {
         atTable: i,
@@ -74,6 +84,9 @@ for (let i = 0; i < 4; i++) {
     }
     players.push(player);
 }
+const team1 = new Team([players[0], players[2]], 0, 0, [], "team1");
+const team2 = new Team([players[1], players[3]], 0, 0, [], "team2");
+const teams = [team1, team2];
 function shareHands() {
     for (let i = 0; i < hands.length; i++) {
         let hand = hands[i];
@@ -94,7 +107,8 @@ function shareHands() {
 shareHands();
 let kickedCard = deck.dealCard();
 if (kickedCard && pack) {
-    pack.appendChild(kickedCard.getHTML());
+    kickedCardElement = kickedCard.getHTML();
+    pack.appendChild(kickedCardElement);
     let player1 = players[0];
     let player1sFirstCard = players[0].hand[0];
     lift = new Lift(player1sFirstCard, player1, player1, player1, [], "", 0);
