@@ -12,42 +12,69 @@ export default class Lift {
         let currentPlayerTurn = players.find(player => {
             return player.position.thisRound === this.turnNumber;
         });
+        console.log("current player", currentPlayerTurn);
         if (currentPlayerTurn) {
             return currentPlayerTurn;
         }
         else {
-            return players[1];
+            console.log(this.turnNumber);
+            return null;
         }
     }
     helpSetPosition(players, winnerPositionAtTable) {
         players.map(player => {
-            const hasSecondPlay = winnerPositionAtTable + 1 === player.position.atTable;
-            const secondPlayPart2 = winnerPositionAtTable + 1 > 3 && player.position.atTable === 0;
-            const hasThirdPlay = winnerPositionAtTable + 2 === player.position.atTable;
-            const hasThirdPlayPart2 = winnerPositionAtTable - 2 === -2;
-            const hasLastPlay = winnerPositionAtTable - 1 < 0 && player.position.atTable === 3;
-            switch (true) {
-                case hasSecondPlay:
-                    player.position.thisRound = 1;
-                    // console.log(`Player Name: ${player}`)
+            switch (winnerPositionAtTable) {
+                case 0:
+                    switch (player.position.atTable) {
+                        case 1:
+                            player.position.thisRound = 1;
+                            break;
+                        case 2:
+                            player.position.thisRound = 2;
+                            break;
+                        case 3:
+                            player.position.thisRound = 3;
+                            break;
+                    }
                     break;
-                case secondPlayPart2:
-                    player.position.thisRound = 1;
+                case 1:
+                    switch (player.position.atTable) {
+                        case 0:
+                            player.position.thisRound = 3;
+                            break;
+                        case 2:
+                            player.position.thisRound = 1;
+                            break;
+                        case 3:
+                            player.position.thisRound = 2;
+                            break;
+                    }
                     break;
-                case hasThirdPlay:
-                    player.position.thisRound = 2;
+                case 2:
+                    switch (player.position.atTable) {
+                        case 0:
+                            player.position.thisRound = 2;
+                            break;
+                        case 1:
+                            player.position.thisRound = 3;
+                            break;
+                        case 3:
+                            player.position.thisRound = 1;
+                            break;
+                    }
                     break;
-                case hasThirdPlayPart2:
-                    player.position.thisRound = 2;
-                    break;
-                case hasLastPlay:
-                    player.position.thisRound = 3;
-                    break;
-                case winnerPositionAtTable - 1 === player.position.atTable:
-                    player.position.thisRound = 3;
-                    break;
-                case winnerPositionAtTable + 3 === player.position.atTable:
-                    player.position.thisRound = 3;
+                case 3:
+                    switch (player.position.atTable) {
+                        case 0:
+                            player.position.thisRound = 1;
+                            break;
+                        case 1:
+                            player.position.thisRound = 2;
+                            break;
+                        case 2:
+                            player.position.thisRound = 3;
+                            break;
+                    }
                     break;
             }
         });

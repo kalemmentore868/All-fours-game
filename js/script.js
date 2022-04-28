@@ -19,6 +19,9 @@ function displayPlayableCards(player) {
         if (cardElement) {
             cardElement.classList.add("playable");
         }
+        else {
+            console.log(legalMoves);
+        }
     });
 }
 for (let hand of hands) {
@@ -41,7 +44,26 @@ for (let hand of hands) {
         lift.currentPlayerTurn.chosenCard = foundCard;
         lift.currentPlayerTurn.removeCard(foundCard.cardId);
         lift.turnNumber++;
-        lift.currentPlayerTurn = lift.getNewCurrentPlayer(players);
+        let nextPlayer = lift.getNewCurrentPlayer(players);
+        if (nextPlayer) {
+            lift.currentPlayerTurn = nextPlayer;
+        }
+        else {
+            console.log("Player not found for new current Player");
+        }
+    }
+    function resetLift() {
+        const liftWinner = game.getLiftWinner();
+        if (liftWinner) {
+            lift.currentPlayerTurn = liftWinner;
+            lift.setRoundForLiftWinner(liftWinner, players);
+            lift.cardsInLift = [];
+            liftContainer.innerHTML = "";
+            lift.turnNumber = 0;
+        }
+        else {
+            console.log("Winner not found");
+        }
     }
     hand.addEventListener("click", (e) => {
         let cardClicked = e.target;
@@ -49,19 +71,14 @@ for (let hand of hands) {
         const foundCard = lift.currentPlayerTurn.findCard(playersChosenCardId);
         if (foundCard) {
             updateLift(foundCard);
+            console.log("turn number", lift.turnNumber);
             if (lift.cardsInLift.length >= 4) {
-                console.log(lift.cardsInLift);
-                const liftWinner = game.getLiftWinner();
-                console.log(liftWinner);
-                if (liftWinner) {
-                    lift.currentPlayerTurn = liftWinner;
-                    lift.setRoundForLiftWinner(liftWinner, players);
-                }
-                lift.cardsInLift = [];
-                liftContainer.innerHTML = "";
-                lift.turnNumber = 0;
+                resetLift();
             }
             displayPlayableCards(lift.currentPlayerTurn);
+        }
+        else {
+            console.log("Card not Found");
         }
     });
 }
@@ -115,23 +132,3 @@ if (kickedCard && pack) {
     game = new Game(lift, players[0], kickedCard.suit, teams, players[0].hand[0].suit, players[0].hand[0].suit);
     displayPlayableCards(lift.currentPlayerTurn);
 }
-//  let player2 = players[1]
-//  let player2sFirstCard = players[1].hand[0]
-//  let player3 = players[2]
-//  let player3sFirstCard = players[2].hand[0]
-//  console.log("Player1's cards he can play", game.allowedPlays(players[0]))
-// lift.suit = player1sFirstCard.suit
-// console.log(`Suit = ${lift.suit}, trump = ${game.trump}`)
-// lift.cardsInLift.push(player1sFirstCard)
-// let player2Moves = game.allowedPlays(player2)
-// console.log("Player2's cards he can play", player2Moves)
-// console.log(`Suit = ${lift.suit}, trump = ${game.trump}`)
-// lift.cardsInLift.push(player2Moves[player2Moves.length - 1])
-// let player3Moves = game.allowedPlays(player3)
-// console.log("Player3's cards he can play", player3Moves)
-// console.log(`Suit = ${lift.suit}, trump = ${game.trump}`)
-// lift.cardsInLift.push(player3Moves[player3Moves.length - 1])
-// let player4Moves = game.allowedPlays(players[3])
-// console.log("Player4's cards he can play", player4Moves)
-// lift.cardsInLift.push(player4Moves[player4Moves.length -1])
-// console.log(lift.cardsInLift)

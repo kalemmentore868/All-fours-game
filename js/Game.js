@@ -147,20 +147,15 @@ export default class Game {
         return owner;
     }
     getLiftWinner() {
-        if (this.lift.cardsInLift.length >= 4) {
-            if (this.containsTrump(this.lift.cardsInLift)) {
-                let trumpInLift = this.getTrumpCards(this.lift.cardsInLift);
-                let highestCard = this.getHighestCardOfSuit(trumpInLift);
-                return this.whoOwnsThisCard(highestCard);
-            }
-            else {
-                let cardsOfSuit = this.getCardsOfSuit(this.lift.cardsInLift);
-                let highestCard = this.getHighestCardOfSuit(cardsOfSuit);
-                return this.whoOwnsThisCard(highestCard);
-            }
+        if (this.containsTrump(this.lift.cardsInLift)) {
+            let trumpInLift = this.getTrumpCards(this.lift.cardsInLift);
+            let highestCard = this.getHighestCardOfSuit(trumpInLift);
+            return this.whoOwnsThisCard(highestCard);
         }
         else {
-            return null;
+            let cardsOfSuit = this.getCardsOfSuit(this.lift.cardsInLift);
+            let highestCard = this.getHighestCardOfSuit(cardsOfSuit);
+            return this.whoOwnsThisCard(highestCard);
         }
     }
 }

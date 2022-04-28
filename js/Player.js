@@ -9,7 +9,6 @@ export default class Player {
     }
     findCard(id) {
         const cardId = parseInt(id);
-        console.log(cardId);
         let foundCard = this.hand.find(card => card.cardId === cardId);
         if (foundCard) {
             return foundCard;
