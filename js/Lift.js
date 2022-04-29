@@ -1,9 +1,9 @@
 export default class Lift {
-    constructor(firstCard, firstPlayer, currentPlayerTurn, playerOnTop, cardsInLift, suit, turnNumber) {
-        this.firstCard = firstCard;
-        this.firstPlayer = firstPlayer;
+    constructor(currentPlayerTurn, cardsInLift, suit, turnNumber) {
+        // this.firstCard = firstCard
+        // this.firstPlayer = firstPlayer
         this.currentPlayerTurn = currentPlayerTurn;
-        this.playerOnTop = playerOnTop;
+        // this.playerOnTop = playerOnTop
         this.cardsInLift = cardsInLift;
         this.suit = suit;
         this.turnNumber = turnNumber;

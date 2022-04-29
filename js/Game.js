@@ -1,11 +1,16 @@
 export default class Game {
-    constructor(lift, whoDealtThisGame, trump, teams, highestTrumpCard, lowestTrumpCard) {
+    constructor(lift, 
+    // trump:string,
+    teams, 
+    // highestTrumpCard:string,
+    // lowestTrumpCard:string
+    round) {
         this.lift = lift;
-        this.whoDealtThisGame = whoDealtThisGame;
-        this.trump = trump;
+        // this.trump = trump
+        this.round = round;
         this.teams = teams;
-        this.highestTrumpCard = highestTrumpCard;
-        this.lowestTrumpCard = lowestTrumpCard;
+        // this.highestTrumpCard = highestTrumpCard
+        // this.lowestTrumpCard = lowestTrumpCard
     }
     //rule enforcement
     allowedPlays(player) {
@@ -13,7 +18,7 @@ export default class Game {
         const playerHasFirstPlay = player.position.thisRound === 0;
         const playerHasTrump = this.containsTrump(player.hand);
         const playerHasSecondPlay = player.position.thisRound === 1;
-        const trumpCall = currentSuit === this.trump;
+        const trumpCall = currentSuit === this.round.trump;
         const trumpInLift = this.containsTrump(this.lift.cardsInLift);
         const playerCanUnderTrump = !trumpCall && trumpInLift
             && this.containsTrump(player.hand);
@@ -49,7 +54,7 @@ export default class Game {
             const trumpInLift = this.getTrumpCards(this.lift.cardsInLift);
             const highestTrumpInLift = this.getHighestCardOfSuit(trumpInLift);
             player.hand.map(card => {
-                if (card.suit === this.trump) {
+                if (card.suit === this.round.trump) {
                     if (this.getCardValue(card) > this.getCardValue(highestTrumpInLift))
                         allCardsExceptSmallerTrump.push(card);
                 }
@@ -109,20 +114,20 @@ export default class Game {
     }
     isDownToTrump(playerHand) {
         for (let card of playerHand) {
-            if (card.suit !== this.trump)
+            if (card.suit !== this.round.trump)
                 return false;
         }
         return true;
     }
     containsTrump(playerHand) {
         for (let card of playerHand) {
-            if (card.suit === this.trump)
+            if (card.suit === this.round.trump)
                 return true;
         }
         return false;
     }
     getTrumpCards(playerHand) {
-        return playerHand.filter(card => card.suit === this.trump);
+        return playerHand.filter(card => card.suit === this.round.trump);
     }
     containsCardOfSuit(playerHand) {
         for (let card of playerHand) {
@@ -146,6 +151,15 @@ export default class Game {
         }
         return owner;
     }
+    belongsToWhichTeam(player) {
+        let playerTeam = null;
+        this.teams.map(team => {
+            if (player.belongsTo === team.teamName) {
+                playerTeam = team;
+            }
+        });
+        return playerTeam;
+    }
     getLiftWinner() {
         if (this.containsTrump(this.lift.cardsInLift)) {
             let trumpInLift = this.getTrumpCards(this.lift.cardsInLift);
@@ -157,5 +171,65 @@ export default class Game {
             let highestCard = this.getHighestCardOfSuit(cardsOfSuit);
             return this.whoOwnsThisCard(highestCard);
         }
+    }
+    addPointForHigh() {
+        if (this.round.highestTrumpCard) {
+            let owner = this.whoOwnsThisCard(this.round.highestTrumpCard);
+            if (owner) {
+                let team = this.belongsToWhichTeam(owner);
+                if (team) {
+                    team.totalScore++;
+                }
+                else {
+                    console.log("error in game 217");
+                }
+            }
+            else {
+                console.log("error in game 217");
+            }
+        }
+    }
+    addPointForLow() {
+        if (this.round.lowestTrumpCard) {
+            let owner = this.whoOwnsThisCard(this.round.lowestTrumpCard);
+            if (owner) {
+                let team = this.belongsToWhichTeam(owner);
+                if (team) {
+                    team.totalScore++;
+                }
+                else {
+                    console.log("error in game 234");
+                }
+            }
+            else {
+                console.log("error in game 234");
+            }
+        }
+    }
+    addPointForGame() {
+        let team1 = this.teams[0];
+        let team2 = this.teams[1];
+        let team1GamePoints = team1.countForGame();
+        let team2GamePoints = team2.countForGame();
+        if (team1GamePoints > team2GamePoints) {
+            team1.totalScore++;
+        }
+        else if (team1GamePoints < team2GamePoints) {
+            team2.totalScore++;
+        }
+        else if (team1GamePoints === team2GamePoints) {
+            const team1Dealt = team1 === this.belongsToWhichTeam(this.round.whoDealt);
+            if (team1Dealt) {
+                team2.totalScore++;
+            }
+            else {
+                team1.totalScore++;
+            }
+        }
+    }
+    endOfRound() {
+        this.addPointForHigh();
+        this.addPointForLow();
+        this.addPointForGame();
     }
 }
