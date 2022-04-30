@@ -1,10 +1,12 @@
 export default class Round {
-    constructor(trump, highestTrumpCard, lowestTrumpCard, players, whoDealt) {
+    constructor(trump, highestTrumpCard, lowestTrumpCard, players, whoDealt, dealerPositionAtTable, nextDealer) {
         this.trump = trump;
         this.highestTrumpCard = highestTrumpCard;
         this.lowestTrumpCard = lowestTrumpCard;
         this.players = players;
         this.whoDealt = whoDealt;
+        this.dealerPositionAtTable = dealerPositionAtTable;
+        this.nextDealer = nextDealer;
     }
     getCardValue(card) {
         let cardValue = 0;
@@ -65,5 +67,7 @@ export default class Round {
                 this.lowestTrumpCard = card;
             }
         }
+    }
+    setNextDealer() {
     }
 }

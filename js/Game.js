@@ -35,6 +35,9 @@ export default class Game {
         else if (!playerHasCardsOfSuit && !trumpInLift) {
             return player.hand;
         }
+        else if (!playerHasCardsOfSuit && !playerCanUnderTrump) {
+            return player.hand;
+        }
         else if (playerHasSecondPlay) {
             return [...this.getCardsOfSuit(player.hand), ...this.getTrumpCards(player.hand)];
         }

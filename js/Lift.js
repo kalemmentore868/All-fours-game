@@ -1,9 +1,6 @@
 export default class Lift {
     constructor(currentPlayerTurn, cardsInLift, suit, turnNumber) {
-        // this.firstCard = firstCard
-        // this.firstPlayer = firstPlayer
         this.currentPlayerTurn = currentPlayerTurn;
-        // this.playerOnTop = playerOnTop
         this.cardsInLift = cardsInLift;
         this.suit = suit;
         this.turnNumber = turnNumber;
@@ -12,12 +9,10 @@ export default class Lift {
         let currentPlayerTurn = players.find(player => {
             return player.position.thisRound === this.turnNumber;
         });
-        console.log("current player", currentPlayerTurn);
         if (currentPlayerTurn) {
             return currentPlayerTurn;
         }
         else {
-            console.log(this.turnNumber);
             return null;
         }
     }

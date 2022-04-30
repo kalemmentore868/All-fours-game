@@ -9,7 +9,7 @@ let liftContainer = document.querySelector("#displayLift");
 let pack = document.querySelector(".deck");
 let hands = document.querySelectorAll(".hand");
 //variables
-const deck = new Deck();
+let deck = new Deck();
 let playersChosenCardId = "";
 let game;
 let lift;
@@ -19,6 +19,7 @@ let team1;
 let team2;
 let teams;
 const players = [];
+let kickedCard;
 //functions
 function displayPlayableCards(player) {
     const legalMoves = game.allowedPlays(player);
@@ -49,18 +50,28 @@ function shareHands() {
     }
 }
 ;
-function startGame() {
-    let kickedCard = deck.dealCard();
+function kickCard() {
+    let kick = deck.dealCard();
+    if (kick) {
+        kickedCard = kick;
+    }
+    else {
+        console.log("no card kicked");
+    }
     if (kickedCard && pack) {
         kickedCardElement = kickedCard.getHTML();
         pack.appendChild(kickedCardElement);
-        let player1 = players[0];
-        let player1sFirstCard = players[0].hand[0];
-        round = new Round(kickedCard.suit, null, null, players, player1);
-        lift = new Lift(player1, [], "", 0);
-        game = new Game(lift, teams, round);
-        displayPlayableCards(lift.currentPlayerTurn);
     }
+}
+function startGame() {
+    kickCard();
+    let player1 = players[0];
+    let player4 = players[3];
+    let player1sFirstCard = players[0].hand[0];
+    round = new Round(kickedCard.suit, null, null, players, player1, 0, players[1]);
+    lift = new Lift(player1, [], "", 0);
+    game = new Game(lift, teams, round);
+    displayPlayableCards(lift.currentPlayerTurn);
 }
 function setUpTeams() {
     let position;
@@ -110,6 +121,13 @@ for (let hand of hands) {
         lift.currentPlayerTurn.removeCard(foundCard.cardId);
         const finalCardPlayed = lift.currentPlayerTurn.position.thisRound === 3 && lift.currentPlayerTurn.hand.length === 0;
         if (finalCardPlayed) {
+            game.endOfRound();
+            resetLift();
+            deck.cards = [...deck.cards, ...team1.cardsInLift, ...team2.cardsInLift, kickedCard,];
+            team1.cardsInLift = [];
+            team2.cardsInLift = [];
+            lift.currentPlayerTurn = round.nextDealer;
+            shareHands();
         }
         lift.turnNumber++;
         if (lift.turnNumber > 3) {
@@ -129,10 +147,6 @@ for (let hand of hands) {
             let winningTeam = game.belongsToWhichTeam(liftWinner);
             if (winningTeam) {
                 winningTeam.cardsInLift = [...winningTeam.cardsInLift, ...lift.cardsInLift];
-                // let teamLift = winningTeam.cardsInLift
-                // teamLift.map(card => {
-                //     console.log(`Card Value ${card.value} Game Point ${winningTeam?.getGamePointValue(card)}`)
-                // })
             }
             else {
                 console.log('Team not found');
@@ -157,7 +171,6 @@ for (let hand of hands) {
                 round.setLowestTrump(foundCard);
             }
             updateLift(foundCard);
-            console.log("turn number", lift.turnNumber);
             if (lift.cardsInLift.length >= 4) {
                 resetLift();
             }
