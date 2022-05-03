@@ -104,3 +104,39 @@
     display: grid;
     grid-template-columns: 1fr 1fr 1fr
 }
+
+.team-container{
+    display: flex;
+    justify-content: space-evenly;
+    
+}
+
+.show-names{
+    display: flex;
+    justify-content: space-between;
+    width: 100px;
+}
+
+.mini-card{
+    
+        height: 50px;
+        width: 50px;
+        border: 1px solid black;
+        border-radius: .5rem;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 1rem;
+        position: relative;
+        background-color: white;
+    
+}
+
+.mini-card-container{
+    display: flex;
+}
+
+.mini-card-box{
+    display:flex;
+    flex-direction: column;
+}

@@ -16,4 +16,12 @@ export default class Card {
         cardDiv.dataset.value = `${this.value} ${this.suit}`;
         return cardDiv;
     }
+    makeSmallCard() {
+        const cardDiv = document.createElement("div");
+        cardDiv.innerText = this.suit + this.value;
+        cardDiv.id = this.cardId.toString();
+        cardDiv.classList.add("mini-card", this.color);
+        cardDiv.dataset.value = `${this.value} ${this.suit}`;
+        return cardDiv;
+    }
 }

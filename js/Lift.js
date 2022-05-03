@@ -74,6 +74,12 @@ export default class Lift {
             }
         });
     }
+    newRound(player) {
+        this.currentPlayerTurn = player;
+        this.cardsInLift = [];
+        this.suit = "";
+        this.turnNumber = 0;
+    }
     setRoundForLiftWinner(liftWinner, players) {
         liftWinner.position.thisRound = 0;
         switch (liftWinner.position.atTable) {

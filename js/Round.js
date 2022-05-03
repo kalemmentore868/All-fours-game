@@ -68,6 +68,20 @@ export default class Round {
             }
         }
     }
-    setNextDealer() {
+    setNewDealer() {
+        this.dealerPositionAtTable++;
+        if (this.dealerPositionAtTable > 3)
+            this.dealerPositionAtTable = 0;
+        this.whoDealt = this.players[this.dealerPositionAtTable];
+        let nextDealerIndex = this.dealerPositionAtTable + 1;
+        if (nextDealerIndex > 3)
+            nextDealerIndex = 0;
+        this.nextDealer = this.players[nextDealerIndex];
+    }
+    setUpNextRound(trump) {
+        this.highestTrumpCard = null;
+        this.lowestTrumpCard = null;
+        this.trump = trump;
+        this.setNewDealer();
     }
 }

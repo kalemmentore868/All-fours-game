@@ -235,4 +235,9 @@ export default class Game {
         this.addPointForLow();
         this.addPointForGame();
     }
+    getElement(element, text) {
+        const cardDiv = document.createElement(element);
+        cardDiv.innerText = text;
+        return cardDiv;
+    }
 }
