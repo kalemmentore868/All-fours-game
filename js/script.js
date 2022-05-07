@@ -8,6 +8,12 @@ import Round from "./Round.js";
 let liftContainer = document.querySelector("#displayLift");
 let pack = document.querySelector(".deck");
 let hands = document.querySelectorAll(".hand");
+let beggerModal = document.querySelector("#nextToDeal");
+let begBtn = document.querySelector("#beg");
+let playGameBtn = document.querySelector("#play");
+let dealerModal = document.querySelector("#dealer");
+let takeOneBtn = document.querySelector("#take-one");
+let goBackBtn = document.querySelector("#go-back");
 let teamDivs = document.querySelectorAll(".teams");
 //variables
 let deck = new Deck();
@@ -24,10 +30,7 @@ let kickedCard;
 //functions
 function displayPlayableCards(player) {
     const legalMoves = game.allowedPlays(player);
-    console.log("legal moves: ", legalMoves);
-    console.log("tump: ", round.trump);
-    console.log(player.position.thisRound);
-    legalMoves.map(card => {
+    legalMoves.map((card) => {
         const cardElement = document.getElementById(`${card.cardId}`);
         if (cardElement) {
             cardElement.classList.add("playable");
@@ -37,12 +40,12 @@ function displayPlayableCards(player) {
         }
     });
 }
-function shareHands() {
+function shareHands(numberOfCards) {
     for (let i = 0; i < hands.length; i++) {
         let hand = hands[i];
         let currentPlayer = players[i];
         let cardsGiven = 0;
-        while (cardsGiven < 6) {
+        while (cardsGiven < numberOfCards) {
             const playerCard = deck.dealCard();
             if (playerCard) {
                 playerCard.playedBy = currentPlayer.name;
@@ -53,7 +56,6 @@ function shareHands() {
         }
     }
 }
-;
 function kickCard() {
     let kick = deck.dealCard();
     if (kick) {
@@ -67,23 +69,31 @@ function kickCard() {
         pack.appendChild(kickedCardElement);
     }
 }
-function newRound() {
-    var _a;
-    deck.cards = [...deck.cards, ...team1.cardsInLift, ...team2.cardsInLift, kickedCard,];
+function resetDeck() {
+    deck.cards = [
+        ...deck.cards,
+        ...team1.cardsInLift,
+        ...team2.cardsInLift,
+        kickedCard,
+    ];
     team1.cardsInLift = [];
     team2.cardsInLift = [];
     liftContainer.innerHTML = "";
+    deck.shuffle();
+}
+function newRound() {
+    var _a;
+    resetDeck();
     if (kickedCardElement)
         (_a = kickedCardElement.parentNode) === null || _a === void 0 ? void 0 : _a.removeChild(kickedCardElement);
-    shareHands();
+    shareHands(6);
     kickCard();
     round.setUpNextRound(kickedCard.suit);
     lift.newRound(round.nextDealer);
     lift.setRoundForLiftWinner(lift.currentPlayerTurn, players);
-    console.log(lift.currentPlayerTurn.position.thisRound);
-    console.log(lift.currentPlayerTurn);
+    game.addPointsForKickedCard(kickedCard);
+    displayBegModal(round.nextDealer);
     updateScore();
-    //  displayPlayableCards(lift.currentPlayerTurn)    
 }
 function displayNames() {
     for (let i = 0; i < 2; i++) {
@@ -94,7 +104,7 @@ function displayNames() {
         teamDiv.append(team1Title);
         let playersList = document.createElement("div");
         playersList.classList.add("show-names");
-        teams[i].players.map(player => {
+        teams[i].players.map((player) => {
             let playerNameItem = game.getElement("div", player.name);
             playersList.append(playerNameItem);
         });
@@ -106,25 +116,39 @@ function displayNames() {
     }
 }
 function updateScore() {
-    teams.map(team => {
+    teams.map((team) => {
         let teamScore = document.getElementById(team.teamName);
         if (teamScore)
             teamScore.innerText = `Total Score: ${team.totalScore}`;
     });
+}
+function displayBegModal(player) {
+    let headingElement = beggerModal.querySelector("h2");
+    headingElement.innerText = `Would you like to beg ${player.name}?`;
+    if (player === round.nextDealer) {
+        beggerModal.style.display = "block";
+    }
+}
+function displayDealerModal(player) {
+    let headingElement = dealerModal.querySelector("h2");
+    headingElement.innerText = `Would you like to go back to pack ${player.name}?`;
+    if (player === round.whoDealt) {
+        dealerModal.style.display = "block";
+    }
 }
 function displayLifts(winningTeam) {
     let miniCardsbox = document.createElement("div"); //div holding 4 cards
     miniCardsbox.classList.add("mini-card-container");
     if (teams[0] === winningTeam) {
         let container = teamDivs[0].lastChild;
-        lift.cardsInLift.map(card => {
+        lift.cardsInLift.map((card) => {
             miniCardsbox.append(card.makeSmallCard());
         });
         container === null || container === void 0 ? void 0 : container.append(miniCardsbox);
     }
     else {
         let container = teamDivs[1].lastChild;
-        lift.cardsInLift.map(card => {
+        lift.cardsInLift.map((card) => {
             miniCardsbox.append(card.makeSmallCard());
         });
         container === null || container === void 0 ? void 0 : container.append(miniCardsbox);
@@ -138,6 +162,8 @@ function startGame() {
     round = new Round(kickedCard.suit, null, null, players, player4, 3, players[0]);
     lift = new Lift(player1, [], "", 0);
     game = new Game(lift, teams, round);
+    game.addPointsForKickedCard(kickedCard);
+    displayBegModal(round.nextDealer);
     displayPlayableCards(lift.currentPlayerTurn);
     displayNames();
 }
@@ -146,7 +172,7 @@ function setUpTeams() {
     for (let i = 0; i < 4; i++) {
         position = {
             atTable: i,
-            thisRound: i
+            thisRound: i,
         };
         let player;
         if (i === 0) {
@@ -168,77 +194,93 @@ function setUpTeams() {
     players[3].belongsTo = team2.teamName;
     teams = [team1, team2];
 }
-//event listeners
-for (let hand of hands) {
-    function handleCardClickedStyles(cardClicked) {
-        if (cardClicked && cardClicked.classList.contains("playable")) {
-            let allCards = hand.children;
-            for (let card of allCards) {
-                card.classList.remove("playable");
-            }
-            cardClicked.classList.add("on-deck");
-            liftContainer.append(cardClicked);
-            playersChosenCardId = cardClicked.id;
+function handleCardClickedStyles(cardClicked, hand) {
+    if (cardClicked && cardClicked.classList.contains("playable")) {
+        let allCards = hand.children;
+        for (let card of allCards) {
+            card.classList.remove("playable");
         }
+        cardClicked.classList.add("on-deck");
+        liftContainer.append(cardClicked);
+        playersChosenCardId = cardClicked.id;
     }
-    function updateLift(foundCard) {
-        if (lift.turnNumber === 0) {
-            lift.suit = foundCard.suit;
-        }
+}
+function updateLift(foundCard) {
+    function moveCardFromHandToLift() {
         lift.cardsInLift.push(foundCard);
         lift.currentPlayerTurn.removeCard(foundCard.cardId);
-        const finalCardPlayed = lift.currentPlayerTurn.position.thisRound === 3 && lift.currentPlayerTurn.hand.length === 0;
-        if (finalCardPlayed) {
-            game.endOfRound();
-            newRound();
-        }
-        else {
-            lift.turnNumber++;
-            if (lift.turnNumber > 3) {
-                lift.turnNumber = 0;
-            }
-            let nextPlayer = lift.getNewCurrentPlayer(players);
-            if (nextPlayer) {
-                lift.currentPlayerTurn = nextPlayer;
-            }
-            else {
-                console.log("Player not found for new current Player");
-            }
-        }
     }
-    function resetLift() {
-        const liftWinner = game.getLiftWinner();
-        if (liftWinner) {
-            let winningTeam = game.belongsToWhichTeam(liftWinner);
-            if (winningTeam) {
-                displayLifts(winningTeam);
-                winningTeam.cardsInLift = [...winningTeam.cardsInLift, ...lift.cardsInLift];
-            }
-            else {
-                console.log('Team not found');
-            }
-            lift.currentPlayerTurn = liftWinner;
-            lift.setRoundForLiftWinner(liftWinner, players);
-            lift.cardsInLift = [];
-            liftContainer.innerHTML = "";
+    function startNextRound() {
+        game.endOfRound();
+        newRound();
+    }
+    function goOnToNextPlayerInLift() {
+        lift.turnNumber++;
+        if (lift.turnNumber > 3) {
             lift.turnNumber = 0;
         }
+        let nextPlayer = lift.getNewCurrentPlayer(players);
+        if (nextPlayer) {
+            lift.currentPlayerTurn = nextPlayer;
+        }
         else {
-            console.log("Winner not found");
+            console.log("Player not found for new current Player");
         }
     }
+    const hasFirstPlay = lift.turnNumber === 0;
+    if (hasFirstPlay) {
+        lift.suit = foundCard.suit;
+    }
+    moveCardFromHandToLift();
+    const finalCardPlayed = lift.currentPlayerTurn.position.thisRound === 3 &&
+        lift.currentPlayerTurn.hand.length === 0;
+    if (finalCardPlayed) {
+        startNextRound();
+    }
+    else {
+        goOnToNextPlayerInLift();
+    }
+}
+function resetLift() {
+    function putCardsInWinningTeamLift(winningTeam) {
+        displayLifts(winningTeam);
+        winningTeam.cardsInLift = [...winningTeam.cardsInLift, ...lift.cardsInLift];
+    }
+    function setUpNextLift(liftWinner) {
+        lift.currentPlayerTurn = liftWinner;
+        lift.setRoundForLiftWinner(liftWinner, players);
+        lift.cardsInLift = [];
+        liftContainer.innerHTML = "";
+        lift.turnNumber = 0;
+    }
+    const liftWinner = game.getLiftWinner();
+    if (liftWinner) {
+        let winningTeam = game.belongsToWhichTeam(liftWinner);
+        if (winningTeam) {
+            putCardsInWinningTeamLift(winningTeam);
+        }
+        else {
+            console.log("Team not found");
+        }
+        setUpNextLift(liftWinner);
+    }
+    else {
+        console.log("Winner not found");
+    }
+}
+//event listeners
+for (let hand of hands) {
     hand.addEventListener("click", (e) => {
         let cardClicked = e.target;
-        handleCardClickedStyles(cardClicked);
+        handleCardClickedStyles(cardClicked, hand);
         const foundCard = lift.currentPlayerTurn.findCard(playersChosenCardId);
         if (foundCard) {
-            if (foundCard.suit === round.trump) {
+            const trumpPlay = foundCard.suit === round.trump;
+            if (trumpPlay) {
                 round.setHighestTrump(foundCard);
                 round.setLowestTrump(foundCard);
             }
             updateLift(foundCard);
-            console.log(lift.suit);
-            console.log(lift.cardsInLift);
             if (lift.cardsInLift.length >= 4) {
                 resetLift();
             }
@@ -249,7 +291,51 @@ for (let hand of hands) {
         }
     });
 }
+playGameBtn.addEventListener("click", () => {
+    beggerModal.style.display = "none";
+});
+begBtn.addEventListener("click", () => {
+    beggerModal.style.display = "none";
+    displayDealerModal(round.whoDealt);
+});
+takeOneBtn.addEventListener("click", () => {
+    game.addPointToOtherTeam(round.whoDealt, 1);
+    dealerModal.style.display = "none";
+    updateScore();
+});
+goBackBtn.addEventListener("click", () => {
+    function backToPack() {
+        var _a;
+        shareHands(3);
+        if (kickedCardElement)
+            (_a = kickedCardElement.parentNode) === null || _a === void 0 ? void 0 : _a.removeChild(kickedCardElement);
+        kickCard();
+        game.addPointsForKickedCard(kickedCard);
+    }
+    function ensureTrumpChanged() {
+        var _a;
+        let cardsInDeck = deck.cards.length;
+        if (round.trump === kickedCard.suit && cardsInDeck > 4) {
+            backToPack();
+            ensureTrumpChanged();
+        }
+        else if (round.trump === kickedCard.suit && cardsInDeck <= 4) {
+            if (kickedCardElement)
+                (_a = kickedCardElement.parentNode) === null || _a === void 0 ? void 0 : _a.removeChild(kickedCardElement);
+            kickCard();
+            ensureTrumpChanged();
+        }
+        else {
+            round.trump = kickedCard.suit;
+        }
+    }
+    dealerModal.style.display = "none";
+    backToPack();
+    ensureTrumpChanged();
+    displayPlayableCards(round.nextDealer);
+});
+//script
 setUpTeams(); //72
 deck.shuffle();
-shareHands(); //37
+shareHands(6); //37
 startGame(); //56
