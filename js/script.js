@@ -159,7 +159,7 @@ function startGame() {
     let player1 = players[0];
     let player4 = players[3];
     let player1sFirstCard = players[0].hand[0];
-    round = new Round(kickedCard.suit, null, null, players, player4, 3, players[0]);
+    round = new Round(kickedCard.suit, null, null, players, player4, 3, players[0], false);
     lift = new Lift(player1, [], "", 0);
     game = new Game(lift, teams, round);
     game.addPointsForKickedCard(kickedCard);
@@ -279,6 +279,8 @@ for (let hand of hands) {
             if (trumpPlay) {
                 round.setHighestTrump(foundCard);
                 round.setLowestTrump(foundCard);
+                round.didJackPass(foundCard);
+                console.log(round.jackInGame);
             }
             updateLift(foundCard);
             if (lift.cardsInLift.length >= 4) {

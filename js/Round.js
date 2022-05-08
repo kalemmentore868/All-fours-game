@@ -1,5 +1,5 @@
 export default class Round {
-    constructor(trump, highestTrumpCard, lowestTrumpCard, players, whoDealt, dealerPositionAtTable, nextDealer) {
+    constructor(trump, highestTrumpCard, lowestTrumpCard, players, whoDealt, dealerPositionAtTable, nextDealer, jackInGame) {
         this.trump = trump;
         this.highestTrumpCard = highestTrumpCard;
         this.lowestTrumpCard = lowestTrumpCard;
@@ -7,6 +7,7 @@ export default class Round {
         this.whoDealt = whoDealt;
         this.dealerPositionAtTable = dealerPositionAtTable;
         this.nextDealer = nextDealer;
+        this.jackInGame = jackInGame;
     }
     getCardValue(card) {
         let cardValue = 0;
@@ -83,5 +84,9 @@ export default class Round {
         this.lowestTrumpCard = null;
         this.trump = trump;
         this.setNewDealer();
+    }
+    didJackPass(card) {
+        if (card.suit === this.trump && card.value === "J")
+            this.jackInGame = true;
     }
 }

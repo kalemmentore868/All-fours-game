@@ -191,6 +191,7 @@ export default class Game {
                 let team = this.belongsToWhichTeam(owner);
                 if (team) {
                     team.totalScore++;
+                    this.checkForWin(team);
                 }
                 else {
                     console.log("error in game 217");
@@ -208,6 +209,7 @@ export default class Game {
                 let team = this.belongsToWhichTeam(owner);
                 if (team) {
                     team.totalScore++;
+                    this.checkForWin(team);
                 }
                 else {
                     console.log("error in game 234");
@@ -225,24 +227,54 @@ export default class Game {
         let team2GamePoints = team2.countForGame();
         if (team1GamePoints > team2GamePoints) {
             team1.totalScore++;
+            this.checkForWin(team1);
         }
         else if (team1GamePoints < team2GamePoints) {
             team2.totalScore++;
+            this.checkForWin(team2);
         }
         else if (team1GamePoints === team2GamePoints) {
             this.addPointToOtherTeam(this.round.whoDealt, 1);
         }
     }
+    addPointForJack() {
+        let ownerOfJack = null;
+        let teamWithJackInLift = null;
+        if (this.round.jackInGame) {
+            this.teams.map((team) => {
+                team.cardsInLift.map((card) => {
+                    if (card.value === "J" && card.suit === this.round.trump) {
+                        teamWithJackInLift = team;
+                        ownerOfJack = this.whoOwnsThisCard(card);
+                        if (ownerOfJack) {
+                            let teamOwnerOfJackBelongsTo = this.belongsToWhichTeam(ownerOfJack);
+                            if (teamOwnerOfJackBelongsTo === teamWithJackInLift) {
+                                teamWithJackInLift.totalScore++;
+                            }
+                            else {
+                                teamWithJackInLift.totalScore += 3;
+                            }
+                            this.checkForWin(teamWithJackInLift);
+                            return;
+                        }
+                    }
+                });
+            });
+        }
+    }
     addPointToOtherTeam(player, points) {
         let playersTeam = this.belongsToWhichTeam(player);
         this.teams.map((team) => {
-            if (team !== playersTeam)
+            if (team !== playersTeam) {
                 team.totalScore += points;
+                this.checkForWin(team);
+            }
         });
     }
     endOfRound() {
         this.addPointForHigh();
         this.addPointForLow();
+        this.addPointForJack();
         this.addPointForGame();
     }
     getElement(element, text) {
@@ -265,9 +297,15 @@ export default class Game {
                     dealersTeam.totalScore += 3;
                     break;
             }
+            this.checkForWin(dealersTeam);
         }
         else {
             console.log("team not found");
+        }
+    }
+    checkForWin(team) {
+        if (team.totalScore >= 5) {
+            console.log(`Team ${team.teamName} wins`);
         }
     }
 }
