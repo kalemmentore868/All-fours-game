@@ -14,6 +14,7 @@ let playGameBtn = document.querySelector("#play");
 let dealerModal = document.querySelector("#dealer");
 let takeOneBtn = document.querySelector("#take-one");
 let goBackBtn = document.querySelector("#go-back");
+let winnerModal = document.querySelector("#show-winner");
 let teamDivs = document.querySelectorAll(".teams");
 //variables
 let deck = new Deck();
@@ -211,7 +212,13 @@ function updateLift(foundCard) {
         lift.currentPlayerTurn.removeCard(foundCard.cardId);
     }
     function startNextRound() {
+        var _a;
         game.endOfRound();
+        if (game.winnerFound) {
+            winnerModal.style.display = "block";
+            let headingElement = winnerModal.querySelector("h2");
+            headingElement.innerText = `Winning Team: ${(_a = game.winningTeam) === null || _a === void 0 ? void 0 : _a.teamName}`;
+        }
         newRound();
     }
     function goOnToNextPlayerInLift() {

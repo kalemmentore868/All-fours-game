@@ -1,16 +1,10 @@
 export default class Game {
-    constructor(lift, 
-    // trump:string,
-    teams, 
-    // highestTrumpCard:string,
-    // lowestTrumpCard:string
-    round) {
+    constructor(lift, teams, round, winnerFound = false, winningTeam = null) {
         this.lift = lift;
-        // this.trump = trump
         this.round = round;
         this.teams = teams;
-        // this.highestTrumpCard = highestTrumpCard
-        // this.lowestTrumpCard = lowestTrumpCard
+        this.winnerFound = winnerFound;
+        this.winningTeam = winningTeam;
     }
     //rule enforcement
     allowedPlays(player) {
@@ -304,8 +298,9 @@ export default class Game {
         }
     }
     checkForWin(team) {
-        if (team.totalScore >= 5) {
-            console.log(`Team ${team.teamName} wins`);
+        if (team.totalScore >= 14 && !this.winnerFound) {
+            this.winnerFound = true;
+            this.winningTeam = team;
         }
     }
 }
